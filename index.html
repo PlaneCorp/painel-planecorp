@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>PlaneCorp · Painéis comerciais</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+background:#fff;color:#303d50;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;height:100vh;
+display:flex;flex-direction:column;overflow:hidden}
+.mark{font-size:25px;font-weight:700;letter-spacing:-.02em}
+.mark .a{color:#4ab8aa}.mark .b{color:#303d50}
+/* login */
+#login{flex:1;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{width:100%;max-width:380px}
+.card .mark{font-size:30px}
+.card .sub{font-size:12.5px;color:#6b7787;margin:4px 0 26px}
+label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6b7787;
+font-weight:650;margin:0 0 5px}
+input{width:100%;font-family:inherit;font-size:15px;padding:10px 12px;border:1px solid #dde3ea;border-radius:5px;
+color:#303d50;margin-bottom:15px;background:#fff}
+input:focus{outline:none;border-color:#4ab8aa}
+button.entrar{width:100%;font-family:inherit;font-size:15px;font-weight:650;padding:11px;border:none;border-radius:5px;
+background:#303d50;color:#fff;cursor:pointer}
+button.entrar:hover{background:#26313f}
+button.entrar:disabled{background:#98a3b1;cursor:default}
+.erro{color:#b03a3a;font-size:12.5px;margin-top:12px;min-height:18px}
+.nota{font-size:11.5px;color:#98a3b1;margin-top:22px;line-height:1.5}
+/* app */
+#app{display:none;flex:1;flex-direction:column;min-height:0}
+.top{border-bottom:1px solid #e3e7ec;padding:11px 22px;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.top .mark{font-size:19px}
+.nav{display:inline-flex;border:1px solid #dde3ea;border-radius:5px;overflow:hidden}
+.nav button{font-family:inherit;font-size:13px;font-weight:600;padding:7px 15px;border:none;background:#fff;
+color:#5a6675;cursor:pointer;border-right:1px solid #dde3ea}
+.nav button:last-child{border-right:none}
+.nav button.on{background:#303d50;color:#fff}
+.quem{margin-left:auto;font-size:12.5px;color:#6b7787}
+.quem b{color:#303d50}
+.sair{font-family:inherit;font-size:12.5px;color:#31857b;background:none;border:none;cursor:pointer;
+border-bottom:1px solid #cfe6e2;padding:0;margin-left:14px}
+iframe{flex:1;width:100%;border:none;min-height:0}
+.carregando{flex:1;display:flex;align-items:center;justify-content:center;color:#6b7787;font-size:13px}
+</style></head><body>
+
+<div id="login"><div class="card">
+ <div class="mark"><span class="b">Plane</span><span class="a">corp</span></div>
+ <div class="sub">Painéis comerciais — acesso restrito à equipe</div>
+ <form id="f" autocomplete="on">
+  <label for="u">Usuário</label>
+  <input id="u" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+  <label for="p">Senha</label>
+  <input id="p" name="password" type="password" autocomplete="current-password" required>
+  <button class="entrar" id="btn" type="submit">Entrar</button>
+ </form>
+ <div class="erro" id="erro"></div>
+ <div class="nota">Os painéis ficam guardados cifrados neste servidor. A senha não sai do seu
+  navegador e é ela que abre o conteúdo — sem ela, os arquivos são ilegíveis para qualquer um.</div>
+</div></div>
+
+<div id="app">
+ <div class="top">
+  <div class="mark"><span class="b">Plane</span><span class="a">corp</span></div>
+  <div class="nav" id="nav"></div>
+  <div class="quem">conectado como <b id="quem"></b><button class="sair" onclick="sair()">sair</button></div>
+ </div>
+ <div class="carregando" id="carregando">abrindo painel…</div>
+ <iframe id="quadro" style="display:none" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads"></iframe>
+</div>
+
+<script>
+const b64d=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let ACESSO=null, EU=null, CHAVES={}, CACHE={}, ATUAL=null;
+
+async function derivar(senha,salt,iter){
+ const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(senha),'PBKDF2',false,['deriveBits']);
+ const bits=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt,iterations:iter},base,256);
+ return new Uint8Array(bits);
+}
+async function hmacHex(keyBytes,msg){
+ const k=await crypto.subtle.importKey('raw',keyBytes,{name:'HMAC',hash:'SHA-256'},false,['sign']);
+ const sig=await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(msg));
+ return btoa(String.fromCharCode(...new Uint8Array(sig)));
+}
+async function abrirGCM(keyBytes,blob,aad){
+ const k=await crypto.subtle.importKey('raw',keyBytes,'AES-GCM',false,['decrypt']);
+ const p={name:'AES-GCM',iv:blob.slice(0,12)}; if(aad)p.additionalData=new TextEncoder().encode(aad);
+ return new Uint8Array(await crypto.subtle.decrypt(p,k,blob.slice(12)));
+}
+async function descomprimir(bytes){
+ const ds=new DecompressionStream('gzip');
+ const st=new Blob([bytes]).stream().pipeThrough(ds);
+ return await new Response(st).text();
+}
+
+document.getElementById('f').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const btn=document.getElementById('btn'), erro=document.getElementById('erro');
+ const usuario=document.getElementById('u').value.trim().toLowerCase();
+ const senha=document.getElementById('p').value;
+ btn.disabled=true; btn.textContent='verificando…'; erro.textContent='';
+ try{
+  if(!ACESSO) ACESSO=await fetch('acesso.json').then(r=>r.json());
+  const u=ACESSO.usuarios.find(x=>x.usuario===usuario);
+  if(!u){ throw new Error('Usuário ou senha não conferem.'); }
+  const dk=await derivar(senha,b64d(u.salt),ACESSO.iter);
+  if(await hmacHex(dk,'planecorp-login')!==u.verificador){ throw new Error('Usuário ou senha não conferem.'); }
+  CHAVES={};
+  for(const pid of u.paineis) CHAVES[pid]=await abrirGCM(dk,b64d(u.chaves[pid]),u.usuario);
+  EU=u; entrar();
+ }catch(err){
+  erro.textContent=err.message==='Usuário ou senha não conferem.'?err.message:'Não foi possível entrar. Tente novamente.';
+  btn.disabled=false; btn.textContent='Entrar';
+ }
+});
+
+function entrar(){
+ document.getElementById('login').style.display='none';
+ document.getElementById('app').style.display='flex';
+ document.getElementById('quem').textContent=EU.nome;
+ const nav=document.getElementById('nav');
+ nav.innerHTML=EU.paineis.map(pid=>{
+  const p=ACESSO.paineis.find(x=>x.id===pid);
+  return `<button data-p="${pid}" onclick="ver('${pid}')">${p?p.nome:pid}</button>`;
+ }).join('');
+ ver(EU.paineis[0]);
+}
+async function ver(pid){
+ if(ATUAL===pid) return;
+ ATUAL=pid;
+ document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.p===pid));
+ const quadro=document.getElementById('quadro'), carregando=document.getElementById('carregando');
+ quadro.style.display='none'; carregando.style.display='flex'; carregando.textContent='abrindo painel…';
+ try{
+  if(!CACHE[pid]){
+   const buf=new Uint8Array(await fetch(pid+'.bin').then(r=>r.arrayBuffer()));
+   CACHE[pid]=await descomprimir(await abrirGCM(CHAVES[pid],buf));
+  }
+  quadro.srcdoc=CACHE[pid];
+  quadro.style.display='block'; carregando.style.display='none';
+ }catch(e){ carregando.textContent='Não foi possível abrir este painel.'; }
+}
+function sair(){ location.reload(); }
+</script>
+</body></html>
