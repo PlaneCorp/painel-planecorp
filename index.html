@@ -37,6 +37,32 @@ color:#5a6675;cursor:pointer;border-right:1px solid #dde3ea}
 .nav button.on{background:#303d50;color:#fff}
 .quem{margin-left:auto;font-size:12.5px;color:#6b7787}
 .quem b{color:#303d50}
+/* capa */
+#capa{flex:1;overflow:auto;padding:26px 22px 60px}
+.capaw{max-width:1040px;margin:0 auto}
+.capah{font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:#6b7787;font-weight:650;margin-bottom:4px}
+.capas{font-size:12.5px;color:#98a3b1;margin-bottom:16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+/* .cardr e não .card: .card já é o quadro do login e os estilos se atropelariam */
+.cardr{border:1px solid #e3e7ec;border-radius:8px;padding:18px 20px 15px;cursor:pointer;text-align:left;
+font-family:inherit;color:inherit;background:#fff;display:flex;flex-direction:column;
+transition:border-color .12s,box-shadow .12s}
+.cardr:hover{border-color:#4ab8aa;box-shadow:0 1px 10px rgba(48,61,80,.07)}
+.ct{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.cn{font-size:17px;font-weight:680;letter-spacing:-.01em}
+.cp{font-size:12.5px;color:#6b7787;margin-top:2px}
+.cd{font-size:11px;color:#98a3b1;white-space:nowrap;padding-top:3px}
+.cnums{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 18px;margin:15px 0 12px;padding:12px 0;
+border-top:1px solid #eef1f4;border-bottom:1px solid #eef1f4}
+.nv{font-size:21px;font-weight:680;letter-spacing:-.02em;line-height:1.1}
+.nl{font-size:11px;color:#98a3b1;margin-top:1px}
+.cdesc{font-size:12.5px;color:#5a6675;flex:1}
+.cdesc b{color:#303d50;font-weight:620}
+.cf{display:flex;justify-content:flex-end;margin-top:14px}
+.abrir{font-size:12px;color:#31857b;font-weight:620}
+.avisocapa{border-left:2px solid #4ab8aa;background:#f6fbfa;padding:12px 16px;margin-top:20px;
+font-size:12.5px;color:#5a6675;border-radius:0 4px 4px 0}
+.avisocapa b{color:#303d50}
 .sair{font-family:inherit;font-size:12.5px;color:#31857b;background:none;border:none;cursor:pointer;
 border-bottom:1px solid #cfe6e2;padding:0;margin-left:14px}
 iframe{flex:1;width:100%;border:none;min-height:0}
@@ -64,13 +90,21 @@ iframe{flex:1;width:100%;border:none;min-height:0}
   <div class="nav" id="nav"></div>
   <div class="quem">conectado como <b id="quem"></b><button class="sair" onclick="sair()">sair</button></div>
  </div>
- <div class="carregando" id="carregando">abrindo painel…</div>
+ <div id="capa"><div class="capaw">
+  <div class="capah">Seus relatórios</div>
+  <div class="capas">Reconstruídos a cada rodada da rotina. A data no canto de cada card é a do
+   último export do Sellbot que entrou.</div>
+  <div class="cards" id="cards"></div>
+  <div class="avisocapa"><b>Como ler as datas.</b> O “agora” dos painéis é o momento do último
+   export, não o relógio do seu computador.</div>
+ </div></div>
+ <div class="carregando" id="carregando" style="display:none">abrindo painel…</div>
  <iframe id="quadro" style="display:none" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads"></iframe>
 </div>
 
 <script>
 const b64d=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-let ACESSO=null, EU=null, CHAVES={}, CACHE={}, ATUAL=null;
+let ACESSO=null, EU=null, CHAVES={}, CACHE={}, BLOBS={}, ATUAL=null;
 
 async function derivar(senha,salt,iter){
  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(senha),'PBKDF2',false,['deriveBits']);
@@ -114,21 +148,44 @@ document.getElementById('f').addEventListener('submit',async e=>{
  }
 });
 
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
 function entrar(){
  document.getElementById('login').style.display='none';
  document.getElementById('app').style.display='flex';
  document.getElementById('quem').textContent=EU.nome;
  const nav=document.getElementById('nav');
- nav.innerHTML=EU.paineis.map(pid=>{
+ nav.innerHTML='<button data-p="__capa" onclick="inicio()">Início</button>'+EU.paineis.map(pid=>{
   const p=ACESSO.paineis.find(x=>x.id===pid);
-  return `<button data-p="${pid}" onclick="ver('${pid}')">${p?p.nome:pid}</button>`;
+  return `<button data-p="${pid}" onclick="ver('${pid}')">${esc(p?p.nome:pid)}</button>`;
  }).join('');
- ver(EU.paineis[0]);
+ /* a descrição vem do manifesto e é escrita por nós no build — o negrito é intencional,
+    por isso desc entra como HTML; todo o resto passa por esc(). */
+ document.getElementById('cards').innerHTML=EU.paineis.map(pid=>{
+  const p=ACESSO.paineis.find(x=>x.id===pid); if(!p) return '';
+  const nums=(p.numeros||[]).map(([v,l])=>
+   `<div class="n"><div class="nv">${esc(v)}</div><div class="nl">${esc(l)}</div></div>`).join('');
+  return `<button class="cardr" onclick="ver('${pid}')">
+   <div class="ct"><div><div class="cn">${esc(p.nome)}</div><div class="cp">${esc(p.para||'')}</div></div>
+    <div class="cd">${esc(p.data||'')}</div></div>
+   <div class="cnums">${nums}</div>
+   <p class="cdesc">${p.desc||''}</p>
+   <div class="cf"><span class="abrir">abrir →</span></div></button>`;
+ }).join('');
+ inicio();
+}
+function inicio(){
+ ATUAL='__capa';
+ document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.p==='__capa'));
+ document.getElementById('quadro').style.display='none';
+ document.getElementById('carregando').style.display='none';
+ document.getElementById('capa').style.display='block';
 }
 async function ver(pid){
  if(ATUAL===pid) return;
  ATUAL=pid;
  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.p===pid));
+ document.getElementById('capa').style.display='none';
  const quadro=document.getElementById('quadro'), carregando=document.getElementById('carregando');
  quadro.style.display='none'; carregando.style.display='flex'; carregando.textContent='abrindo painel…';
  try{
@@ -136,7 +193,12 @@ async function ver(pid){
    const buf=new Uint8Array(await fetch(pid+'.bin').then(r=>r.arrayBuffer()));
    CACHE[pid]=await descomprimir(await abrirGCM(CHAVES[pid],buf));
   }
-  quadro.srcdoc=CACHE[pid];
+  /* Blob URL em vez de srcdoc: o painel de alertas passa de 2,5 MB e conteudo desse
+     tamanho dentro de um atributo HTML e fragil — em alguns navegadores o iframe fica
+     em branco sem erro nenhum. O blob tambem evita reparsear o atributo a cada troca. */
+  if(!BLOBS[pid]) BLOBS[pid]=URL.createObjectURL(new Blob([CACHE[pid]],{type:'text/html'}));
+  quadro.removeAttribute('srcdoc');
+  quadro.src=BLOBS[pid];
   quadro.style.display='block'; carregando.style.display='none';
  }catch(e){ carregando.textContent='Não foi possível abrir este painel.'; }
 }
