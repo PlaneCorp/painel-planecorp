@@ -104,7 +104,7 @@ iframe{flex:1;width:100%;border:none;min-height:0}
 
 <script>
 const b64d=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-let ACESSO=null, EU=null, CHAVES={}, CACHE={}, BLOBS={}, ATUAL=null;
+let ACESSO=null, EU=null, CHAVES={}, CACHE={}, BLOBS={}, ATUAL=null, PERMS={};
 
 async function derivar(senha,salt,iter){
  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(senha),'PBKDF2',false,['deriveBits']);
@@ -141,12 +141,52 @@ document.getElementById('f').addEventListener('submit',async e=>{
   if(await hmacHex(dk,'planecorp-login')!==u.verificador){ throw new Error('Usuário ou senha não conferem.'); }
   CHAVES={};
   for(const pid of u.paineis) CHAVES[pid]=await abrirGCM(dk,b64d(u.chaves[pid]),u.usuario);
+  PERMS={};
+  if(u.perm){ try{
+    PERMS=JSON.parse(new TextDecoder().decode(await abrirGCM(dk,b64d(u.perm),u.usuario+'|perm')));
+  }catch(e){ PERMS={}; } }
   EU=u; entrar();
  }catch(err){
   erro.textContent=err.message==='Usuário ou senha não conferem.'?err.message:'Não foi possível entrar. Tente novamente.';
   btn.disabled=false; btn.textContent='Entrar';
  }
 });
+
+/* Restrição de corretor/função dentro do painel. A função abaixo NUNCA roda aqui —
+   o fonte dela é injetado no HTML decifrado, antes de virar blob, quando o usuário
+   tem restrições. Ela trava o filtro de corretor e esconde abas não permitidas,
+   e reaplica a cada re-render (os painéis reconstroem os botões via innerHTML). */
+function shimPerm(){
+ var P = window.__PERM || {}; var corr = P.corretores || null, fun = P.funcoes || null;
+ if((!corr||!corr.length) && (!fun||!fun.length)) return;
+ function limpa(t){ return (t||'').replace(/\s+/g,' ').trim(); }
+ function comeca(t,lista){ t=limpa(t); return lista.some(function(x){ return t.indexOf(x)===0; }); }
+ function aplicar(){
+  if(corr && corr.length){
+   var cont = document.getElementById('corretor')||document.getElementById('f-corretor')||document.getElementById('f-pessoa');
+   if(cont){
+    var bs = cont.querySelectorAll('button'), primeiro=null;
+    for(var i=0;i<bs.length;i++){ var b=bs[i];
+      if(comeca(b.textContent,corr)){ if(!primeiro) primeiro=b; }
+      else if(b.style.display!=='none') b.style.display='none'; }
+    var on = cont.querySelector('button.on');
+    if(primeiro && (!on || !comeca(on.textContent,corr))) primeiro.click();
+   }
+  }
+  if(fun && fun.length){
+   var tbs = document.querySelectorAll('button[onclick]'), alvo=null, caiu=false;
+   for(var j=0;j<tbs.length;j++){ var t=tbs[j], oc=t.getAttribute('onclick')||'';
+     if(!/^(aba\(|setVis\(|setAba\()/.test(oc)) continue;
+     if(comeca(t.textContent,fun)){ if(!alvo) alvo=t; }
+     else { if(t.classList.contains('on')) caiu=true; if(t.style.display!=='none') t.style.display='none'; } }
+   if(alvo && caiu) alvo.click();
+  }
+ }
+ var pendente=false;
+ function agenda(){ if(pendente) return; pendente=true; setTimeout(function(){pendente=false; aplicar();},60); }
+ new MutationObserver(agenda).observe(document.documentElement,{childList:true,subtree:true});
+ if(document.readyState!=='loading') agenda(); else document.addEventListener('DOMContentLoaded',agenda);
+}
 
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
@@ -196,7 +236,16 @@ async function ver(pid){
   /* Blob URL em vez de srcdoc: o painel de alertas passa de 2,5 MB e conteudo desse
      tamanho dentro de um atributo HTML e fragil — em alguns navegadores o iframe fica
      em branco sem erro nenhum. O blob tambem evita reparsear o atributo a cada troca. */
-  if(!BLOBS[pid]) BLOBS[pid]=URL.createObjectURL(new Blob([CACHE[pid]],{type:'text/html'}));
+  if(!BLOBS[pid]){
+   let html = CACHE[pid];
+   const perm = PERMS[pid];
+   if(perm && ((perm.corretores&&perm.corretores.length)||(perm.funcoes&&perm.funcoes.length))){
+    /* o shim entra logo depois do <head>, antes de qualquer script do painel */
+    const inj = '<scr'+'ipt>window.__PERM='+JSON.stringify(perm)+';('+shimPerm.toString()+')();</scr'+'ipt>';
+    html = html.replace(/<head([^>]*)>/i, m => m + inj);
+   }
+   BLOBS[pid]=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+  }
   quadro.removeAttribute('srcdoc');
   quadro.src=BLOBS[pid];
   quadro.style.display='block'; carregando.style.display='none';
