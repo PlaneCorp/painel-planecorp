@@ -169,8 +169,14 @@ function shimPerm(){
     for(var i=0;i<bs.length;i++){ var b=bs[i];
       if(comeca(b.textContent,corr)){ if(!primeiro) primeiro=b; }
       else if(b.style.display!=='none') b.style.display='none'; }
+    /* prefere o próprio nome da pessoa quando ele está na lista permitida:
+       a Vitória deve abrir na Vitória, não no primeiro da lista */
+    var eu = null;
+    if(P.eu) for(var k=0;k<bs.length;k++){
+      if(bs[k].style.display!=='none' && limpa(bs[k].textContent).indexOf(P.eu)===0){ eu=bs[k]; break; } }
+    var alvoC = eu || primeiro;
     var on = cont.querySelector('button.on');
-    if(primeiro && (!on || !comeca(on.textContent,corr))) primeiro.click();
+    if(alvoC && (!on || !comeca(on.textContent,corr))) alvoC.click();
    }
   }
   if(fun && fun.length){
@@ -241,7 +247,7 @@ async function ver(pid){
    const perm = PERMS[pid];
    if(perm && ((perm.corretores&&perm.corretores.length)||(perm.funcoes&&perm.funcoes.length))){
     /* o shim entra logo depois do <head>, antes de qualquer script do painel */
-    const inj = '<scr'+'ipt>window.__PERM='+JSON.stringify(perm)+';('+shimPerm.toString()+')();</scr'+'ipt>';
+    const inj = '<scr'+'ipt>window.__PERM='+JSON.stringify({...perm, eu: EU.nome})+';('+shimPerm.toString()+')();</scr'+'ipt>';
     html = html.replace(/<head([^>]*)>/i, m => m + inj);
    }
    BLOBS[pid]=URL.createObjectURL(new Blob([html],{type:'text/html'}));
