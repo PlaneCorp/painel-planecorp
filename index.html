@@ -154,8 +154,10 @@ document.getElementById('f').addEventListener('submit',async e=>{
 
 /* Restrição de corretor/função dentro do painel. A função abaixo NUNCA roda aqui —
    o fonte dela é injetado no HTML decifrado, antes de virar blob, quando o usuário
-   tem restrições. Ela trava o filtro de corretor e esconde abas não permitidas,
-   e reaplica a cada re-render (os painéis reconstroem os botões via innerHTML). */
+   tem restrições. Ela esconde "Todos" e os corretores fora da lista (o filtro é de
+   multisseleção: a pessoa pode somar os nomes permitidos, mas nunca cair em "Todos"),
+   esconde abas não permitidas e reaplica a cada re-render (os painéis reconstroem os
+   botões via innerHTML). */
 function shimPerm(){
  var P = window.__PERM || {}; var corr = P.corretores || null, fun = P.funcoes || null;
  if((!corr||!corr.length) && (!fun||!fun.length)) return;
