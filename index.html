@@ -165,7 +165,8 @@ function shimPerm(){
  function comeca(t,lista){ t=limpa(t); return lista.some(function(x){ return t.indexOf(x)===0; }); }
  function aplicar(){
   if(corr && corr.length){
-   var cont = document.getElementById('corretor')||document.getElementById('f-corretor')||document.getElementById('f-pessoa');
+   var cont = document.getElementById('corretor')||document.getElementById('f-corretor')
+            ||document.getElementById('f-pessoa')||document.getElementById('f-vend');
    if(cont){
     var bs = cont.querySelectorAll('button'), primeiro=null;
     for(var i=0;i<bs.length;i++){ var b=bs[i];
