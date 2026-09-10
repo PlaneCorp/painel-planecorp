@@ -4,69 +4,78 @@
 <meta name="robots" content="noindex,nofollow">
 <title>PlaneCorp · Painéis comerciais</title>
 <style>
+/* tema: tokens gerados por tema/tokenizar.py */
+:root{color-scheme:light;--c-26313f:#26313f;--c-303d50:#303d50;--c-31857b:#31857b;--c-4ab8aa:#4ab8aa;--c-5a6675:#5a6675;--c-6b7787:#6b7787;--c-98a3b1:#98a3b1;--c-b03a3a:#b03a3a;--c-b6bec9:#b6bec9;--c-cdd5de:#cdd5de;--c-cfe6e2:#cfe6e2;--c-dde3ea:#dde3ea;--c-e3e7ec:#e3e7ec;--c-ecc9c9:#ecc9c9;--c-eef1f4:#eef1f4;--c-f2f4f7:#f2f4f7;--c-f6fbfa:#f6fbfa;--c-f8fafb:#f8fafb;--c-ffffff:#ffffff;}
+@media (prefers-color-scheme:dark){:root:not([data-tema="claro"]){color-scheme:dark;--c-26313f:#dfe7f1;--c-303d50:#d4ddea;--c-31857b:#7fd0c5;--c-4ab8aa:#6fdacb;--c-5a6675:#a9b1ba;--c-6b7787:#9ba2ac;--c-98a3b1:#7d838b;--c-b03a3a:#f1938d;--c-b6bec9:#65696f;--c-cdd5de:#3c4044;--c-cfe6e2:#323c3a;--c-dde3ea:#36393c;--c-e3e7ec:#353638;--c-ecc9c9:#4b3c3c;--c-eef1f4:#2b2c2d;--c-f2f4f7:#28282a;--c-f6fbfa:#222424;--c-f8fafb:#232424;--c-ffffff:#1e1e1e;}}
+:root[data-tema="escuro"]{color-scheme:dark;--c-26313f:#dfe7f1;--c-303d50:#d4ddea;--c-31857b:#7fd0c5;--c-4ab8aa:#6fdacb;--c-5a6675:#a9b1ba;--c-6b7787:#9ba2ac;--c-98a3b1:#7d838b;--c-b03a3a:#f1938d;--c-b6bec9:#65696f;--c-cdd5de:#3c4044;--c-cfe6e2:#323c3a;--c-dde3ea:#36393c;--c-e3e7ec:#353638;--c-ecc9c9:#4b3c3c;--c-eef1f4:#2b2c2d;--c-f2f4f7:#28282a;--c-f6fbfa:#222424;--c-f8fafb:#232424;--c-ffffff:#1e1e1e;}
+:root[data-tema="claro"]{color-scheme:light;--c-26313f:#26313f;--c-303d50:#303d50;--c-31857b:#31857b;--c-4ab8aa:#4ab8aa;--c-5a6675:#5a6675;--c-6b7787:#6b7787;--c-98a3b1:#98a3b1;--c-b03a3a:#b03a3a;--c-b6bec9:#b6bec9;--c-cdd5de:#cdd5de;--c-cfe6e2:#cfe6e2;--c-dde3ea:#dde3ea;--c-e3e7ec:#e3e7ec;--c-ecc9c9:#ecc9c9;--c-eef1f4:#eef1f4;--c-f2f4f7:#f2f4f7;--c-f6fbfa:#f6fbfa;--c-f8fafb:#f8fafb;--c-ffffff:#ffffff;}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-background:#fff;color:#303d50;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;height:100vh;
+background:var(--c-ffffff);color:var(--c-303d50);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;height:100vh;
 display:flex;flex-direction:column;overflow:hidden}
 .mark{font-size:25px;font-weight:700;letter-spacing:-.02em}
-.mark .a{color:#4ab8aa}.mark .b{color:#303d50}
+.mark .a{color:var(--c-4ab8aa)}.mark .b{color:var(--c-303d50)}
 /* login */
 #login{flex:1;display:flex;align-items:center;justify-content:center;padding:24px}
 .card{width:100%;max-width:380px}
 .card .mark{font-size:30px}
-.card .sub{font-size:12.5px;color:#6b7787;margin:4px 0 26px}
-label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6b7787;
+.card .sub{font-size:12.5px;color:var(--c-6b7787);margin:4px 0 26px}
+label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--c-6b7787);
 font-weight:650;margin:0 0 5px}
-input{width:100%;font-family:inherit;font-size:15px;padding:10px 12px;border:1px solid #dde3ea;border-radius:5px;
-color:#303d50;margin-bottom:15px;background:#fff}
-input:focus{outline:none;border-color:#4ab8aa}
+input{width:100%;font-family:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--c-dde3ea);border-radius:5px;
+color:var(--c-303d50);margin-bottom:15px;background:var(--c-ffffff)}
+input:focus{outline:none;border-color:var(--c-4ab8aa)}
 button.entrar{width:100%;font-family:inherit;font-size:15px;font-weight:650;padding:11px;border:none;border-radius:5px;
-background:#303d50;color:#fff;cursor:pointer}
-button.entrar:hover{background:#26313f}
-button.entrar:disabled{background:#98a3b1;cursor:default}
-.erro{color:#b03a3a;font-size:12.5px;margin-top:12px;min-height:18px}
-.nota{font-size:11.5px;color:#98a3b1;margin-top:22px;line-height:1.5}
+background:var(--c-303d50);color:var(--c-ffffff);cursor:pointer}
+button.entrar:hover{background:var(--c-26313f)}
+button.entrar:disabled{background:var(--c-98a3b1);cursor:default}
+.erro{color:var(--c-b03a3a);font-size:12.5px;margin-top:12px;min-height:18px}
+.nota{font-size:11.5px;color:var(--c-98a3b1);margin-top:22px;line-height:1.5}
 /* app */
 #app{display:none;flex:1;flex-direction:column;min-height:0}
-.top{border-bottom:1px solid #e3e7ec;padding:11px 22px;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.top{border-bottom:1px solid var(--c-e3e7ec);padding:11px 22px;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
 .top .mark{font-size:19px}
-.nav{display:inline-flex;border:1px solid #dde3ea;border-radius:5px;overflow:hidden}
-.nav button{font-family:inherit;font-size:13px;font-weight:600;padding:7px 15px;border:none;background:#fff;
-color:#5a6675;cursor:pointer;border-right:1px solid #dde3ea}
+.nav{display:inline-flex;border:1px solid var(--c-dde3ea);border-radius:5px;overflow:hidden}
+.nav button{font-family:inherit;font-size:13px;font-weight:600;padding:7px 15px;border:none;background:var(--c-ffffff);
+color:var(--c-5a6675);cursor:pointer;border-right:1px solid var(--c-dde3ea)}
 .nav button:last-child{border-right:none}
-.nav button.on{background:#303d50;color:#fff}
-.quem{margin-left:auto;font-size:12.5px;color:#6b7787}
-.quem b{color:#303d50}
+.nav button.on{background:var(--c-303d50);color:var(--c-ffffff)}
+.quem{margin-left:auto;font-size:12.5px;color:var(--c-6b7787)}
+.quem b{color:var(--c-303d50)}
 /* capa */
 #capa{flex:1;overflow:auto;padding:26px 22px 60px}
 .capaw{max-width:1040px;margin:0 auto}
-.capah{font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:#6b7787;font-weight:650;margin-bottom:4px}
-.capas{font-size:12.5px;color:#98a3b1;margin-bottom:16px}
+.capah{font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--c-6b7787);font-weight:650;margin-bottom:4px}
+.capas{font-size:12.5px;color:var(--c-98a3b1);margin-bottom:16px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
 /* .cardr e não .card: .card já é o quadro do login e os estilos se atropelariam */
-.cardr{border:1px solid #e3e7ec;border-radius:8px;padding:18px 20px 15px;cursor:pointer;text-align:left;
-font-family:inherit;color:inherit;background:#fff;display:flex;flex-direction:column;
+.cardr{border:1px solid var(--c-e3e7ec);border-radius:8px;padding:18px 20px 15px;cursor:pointer;text-align:left;
+font-family:inherit;color:inherit;background:var(--c-ffffff);display:flex;flex-direction:column;
 transition:border-color .12s,box-shadow .12s}
-.cardr:hover{border-color:#4ab8aa;box-shadow:0 1px 10px rgba(48,61,80,.07)}
+.cardr:hover{border-color:var(--c-4ab8aa);box-shadow:0 1px 10px rgba(48,61,80,.07)}
 .ct{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .cn{font-size:17px;font-weight:680;letter-spacing:-.01em}
-.cp{font-size:12.5px;color:#6b7787;margin-top:2px}
-.cd{font-size:11px;color:#98a3b1;white-space:nowrap;padding-top:3px}
+.cp{font-size:12.5px;color:var(--c-6b7787);margin-top:2px}
+.cd{font-size:11px;color:var(--c-98a3b1);white-space:nowrap;padding-top:3px}
 .cnums{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 18px;margin:15px 0 12px;padding:12px 0;
-border-top:1px solid #eef1f4;border-bottom:1px solid #eef1f4}
+border-top:1px solid var(--c-eef1f4);border-bottom:1px solid var(--c-eef1f4)}
 .nv{font-size:21px;font-weight:680;letter-spacing:-.02em;line-height:1.1}
-.nl{font-size:11px;color:#98a3b1;margin-top:1px}
-.cdesc{font-size:12.5px;color:#5a6675;flex:1}
-.cdesc b{color:#303d50;font-weight:620}
+.nl{font-size:11px;color:var(--c-98a3b1);margin-top:1px}
+.cdesc{font-size:12.5px;color:var(--c-5a6675);flex:1}
+.cdesc b{color:var(--c-303d50);font-weight:620}
 .cf{display:flex;justify-content:flex-end;margin-top:14px}
-.abrir{font-size:12px;color:#31857b;font-weight:620}
-.avisocapa{border-left:2px solid #4ab8aa;background:#f6fbfa;padding:12px 16px;margin-top:20px;
-font-size:12.5px;color:#5a6675;border-radius:0 4px 4px 0}
-.avisocapa b{color:#303d50}
-.sair{font-family:inherit;font-size:12.5px;color:#31857b;background:none;border:none;cursor:pointer;
-border-bottom:1px solid #cfe6e2;padding:0;margin-left:14px}
+.abrir{font-size:12px;color:var(--c-31857b);font-weight:620}
+.avisocapa{border-left:2px solid var(--c-4ab8aa);background:var(--c-f6fbfa);padding:12px 16px;margin-top:20px;
+font-size:12.5px;color:var(--c-5a6675);border-radius:0 4px 4px 0}
+.avisocapa b{color:var(--c-303d50)}
+.sair{font-family:inherit;font-size:12.5px;color:var(--c-31857b);background:none;border:none;cursor:pointer;
+border-bottom:1px solid var(--c-cfe6e2);padding:0;margin-left:14px}
+.tema{font-family:inherit;font-size:12.5px;color:var(--c-6b7787);background:none;
+border:1px solid var(--c-dde3ea);border-radius:6px;cursor:pointer;padding:3px 9px;margin-left:14px;
+display:inline-flex;align-items:center;gap:5px;line-height:1.4}
+.tema:hover{border-color:var(--c-98a3b1);color:var(--c-303d50)}
 iframe{flex:1;width:100%;border:none;min-height:0}
-.carregando{flex:1;display:flex;align-items:center;justify-content:center;color:#6b7787;font-size:13px}
+.carregando{flex:1;display:flex;align-items:center;justify-content:center;color:var(--c-6b7787);font-size:13px}
 </style></head><body>
 
 <div id="login"><div class="card">
@@ -88,7 +97,7 @@ iframe{flex:1;width:100%;border:none;min-height:0}
  <div class="top">
   <div class="mark"><span class="b">Plane</span><span class="a">corp</span></div>
   <div class="nav" id="nav"></div>
-  <div class="quem">conectado como <b id="quem"></b><button class="sair" onclick="sair()">sair</button></div>
+  <div class="quem">conectado como <b id="quem"></b><button class="tema" id="btema" onclick="viraTema()" title="Alternar claro/escuro" aria-label="Alternar tema"><span id="btemai">◐</span><span id="btemat">Escuro</span></button><button class="sair" onclick="sair()">sair</button></div>
  </div>
  <div id="capa"><div class="capaw">
   <div class="capah">Seus relatórios</div>
@@ -103,6 +112,35 @@ iframe{flex:1;width:100%;border:none;min-height:0}
 </div>
 
 <script>
+/* ---- tema claro/escuro. A escolha fica no navegador de cada pessoa e vale para
+   todos os painéis. Sem escolha salva, segue o sistema operacional. Os painéis abrem
+   em iframe sandbox (origem opaca): não dá para tocar no DOM deles nem compartilhar
+   localStorage — a comunicação é por postMessage e pelo valor injetado no blob. */
+let TEMA = null;
+function temaDoSistema(){ return matchMedia('(prefers-color-scheme:dark)').matches?'escuro':'claro'; }
+function aplicaTema(t){
+  TEMA = t;
+  document.documentElement.dataset.tema = t;
+  const i=document.getElementById('btemai'), x=document.getElementById('btemat');
+  if(i) i.textContent = t==='escuro' ? '☀' : '◐';
+  if(x) x.textContent = t==='escuro' ? 'Claro' : 'Escuro';
+  const q=document.getElementById('quadro');
+  if(q && q.contentWindow) { try{ q.contentWindow.postMessage({planecorpTema:t},'*'); }catch(e){} }
+}
+function viraTema(){
+  const t = TEMA==='escuro' ? 'claro' : 'escuro';
+  try{ localStorage.setItem('planecorp_tema', t); }catch(e){}
+  aplicaTema(t);
+}
+(function(){
+  let t=null; try{ t=localStorage.getItem('planecorp_tema'); }catch(e){}
+  aplicaTema(t || temaDoSistema());
+  try{ matchMedia('(prefers-color-scheme:dark)').addEventListener('change', e=>{
+    let salvo=null; try{ salvo=localStorage.getItem('planecorp_tema'); }catch(x){}
+    if(!salvo) aplicaTema(e.matches?'escuro':'claro');
+  }); }catch(e){}
+})();
+
 const b64d=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 let ACESSO=null, EU=null, CHAVES={}, CACHE={}, BLOBS={}, ATUAL=null, PERMS={};
 
@@ -158,6 +196,15 @@ document.getElementById('f').addEventListener('submit',async e=>{
    multisseleção: a pessoa pode somar os nomes permitidos, mas nunca cair em "Todos"),
    esconde abas não permitidas e reaplica a cada re-render (os painéis reconstroem os
    botões via innerHTML). */
+function shimTema(){
+ /* roda dentro do painel (iframe sandbox, origem opaca). Recebe o tema inicial
+    injetado no blob e ouve as trocas que o topo manda por postMessage. */
+ function ap(t){ if(t) document.documentElement.setAttribute('data-tema', t); }
+ ap(window.__TEMA);
+ addEventListener('message', function(e){
+  if(e && e.data && e.data.planecorpTema) ap(e.data.planecorpTema);
+ });
+}
 function shimPerm(){
  var P = window.__PERM || {}; var corr = P.corretores || null, fun = P.funcoes || null;
  if((!corr||!corr.length) && (!fun||!fun.length)) return;
@@ -248,14 +295,17 @@ async function ver(pid){
   if(!BLOBS[pid]){
    let html = CACHE[pid];
    const perm = PERMS[pid];
+   /* os shims entram logo depois do <head>, antes de qualquer script do painel */
+   let inj = '<scr'+'ipt>window.__TEMA='+JSON.stringify(TEMA)+';('+shimTema.toString()+')();';
    if(perm && ((perm.corretores&&perm.corretores.length)||(perm.funcoes&&perm.funcoes.length))){
-    /* o shim entra logo depois do <head>, antes de qualquer script do painel */
-    const inj = '<scr'+'ipt>window.__PERM='+JSON.stringify({...perm, eu: EU.nome})+';('+shimPerm.toString()+')();</scr'+'ipt>';
-    html = html.replace(/<head([^>]*)>/i, m => m + inj);
+    inj += 'window.__PERM='+JSON.stringify({...perm, eu: EU.nome})+';('+shimPerm.toString()+')();';
    }
+   inj += '</scr'+'ipt>';
+   html = html.replace(/<head([^>]*)>/i, m => m + inj);
    BLOBS[pid]=URL.createObjectURL(new Blob([html],{type:'text/html'}));
   }
   quadro.removeAttribute('srcdoc');
+  quadro.onload=function(){ try{ quadro.contentWindow.postMessage({planecorpTema:TEMA},'*'); }catch(e){} };
   quadro.src=BLOBS[pid];
   quadro.style.display='block'; carregando.style.display='none';
  }catch(e){ carregando.textContent='Não foi possível abrir este painel.'; }
