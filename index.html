@@ -296,7 +296,7 @@ async function ver(pid){
    let html = CACHE[pid];
    const perm = PERMS[pid];
    /* os shims entram logo depois do <head>, antes de qualquer script do painel */
-   let inj = '<scr'+'ipt>window.__TEMA='+JSON.stringify(TEMA)+';('+shimTema.toString()+')();';
+   let inj = '<scr'+'ipt>window.__TEMA='+JSON.stringify(TEMA)+';window.__ESTADO='+JSON.stringify(estadoLido())+';('+shimTema.toString()+')();';
    if(perm && ((perm.corretores&&perm.corretores.length)||(perm.funcoes&&perm.funcoes.length))){
     inj += 'window.__PERM='+JSON.stringify({...perm, eu: EU.nome})+';('+shimPerm.toString()+')();';
    }
@@ -310,6 +310,18 @@ async function ver(pid){
   quadro.style.display='block'; carregando.style.display='none';
  }catch(e){ carregando.textContent='Não foi possível abrir este painel.'; }
 }
+/* filtros lembrados pelos painéis (kit.js): o iframe é de origem opaca e não tem
+   localStorage próprio, então o painel manda o estado para cá e recebe de volta
+   injetado no blob. Ao receber, o blob do painel atual é descartado para que a
+   próxima abertura já venha com o estado novo. */
+function estadoLido(){ try{ return JSON.parse(localStorage.getItem('planecorp_estado')||'{}'); }catch(e){ return {}; } }
+addEventListener('message', function(e){
+ if(!e || !e.data || !e.data.planecorpEstado) return;
+ const m=e.data.planecorpEstado; if(!m || typeof m.chave!=='string') return;
+ const est=estadoLido(); est[m.chave]=m.valor;
+ try{ localStorage.setItem('planecorp_estado', JSON.stringify(est)); }catch(x){}
+ if(ATUAL && BLOBS[ATUAL]){ try{ URL.revokeObjectURL(BLOBS[ATUAL]); }catch(x){} delete BLOBS[ATUAL]; }
+});
 function sair(){ location.reload(); }
 </script>
 </body></html>
